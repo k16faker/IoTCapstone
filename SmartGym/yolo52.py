@@ -325,7 +325,7 @@ while True:
 
 
 
-    cv2.imshow("ROI", frame)
+    cv2.imshow("SmartGym", frame)
 
     upload_if_needed(num_of_people, num_people_treadmil, num_of_lag, num_of_machine1, num_of_machine2)
     check_the_hour(num_of_people)
