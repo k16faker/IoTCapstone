@@ -154,7 +154,7 @@ cv2.namedWindow('ROI')
 cv2.setMouseCallback('ROI', points)
 
 cap = cv2.VideoCapture('vid4.mp4')
-#cap = cv2.VideoCapture(0)
+#cap = cv2.VideoCapture('http://192.168.35.135:81/stream')
 bg = cv2.imread('background.jpg')
 bg = cv2.resize(bg, (1920, 1080))
 
@@ -337,47 +337,46 @@ while True:
 
 
 
-# Divide the image into 7x7 equal regions
+# 히트맵 구역 7x7로 나누기
 region_width = bg.shape[1] // 7
 region_height = bg.shape[0] // 7
 
-# Create a numpy array to store the count of red dots in each region
+# 각 구역의 빨간 점 개수를 저장할 배열
 region_counts = np.zeros((49,), dtype=int)
 
-# Iterate through the detected centroids and count the red dots in each region
+# 각 구역의 빨간 점 개수를 계산
 for centroid in center_points:
-    # Determine the region index based on the centroid's coordinates
     region_x = centroid[0] // region_width
     region_y = centroid[1] // region_height
     region_index = region_y * 7 + region_x
 
-    # Increment the count for the corresponding region
+    # 범위를 벗어나는 경우 무시
     if region_index < 49:
         region_counts[region_index] += 1
 
-# Determine the maximum count among all regions
+# 가장 많은 빨간 점 개수 계산
 max_count = np.max(region_counts)
 
-# Create a blank overlay image with transparency
+# 히트맵 이미지 생성
 overlay = np.zeros_like(bg, dtype=np.uint8)
 
-# Draw rectangles on the overlay based on the count in each region
+# 각 구역의 빨간 점 개수에 따라 색칠
 for region_index, count in enumerate(region_counts):
-    # Determine the region coordinates
+    # 구역의 좌표 계산
     region_x = (region_index % 7) * region_width
     region_y = (region_index // 7) * region_height
 
-    # Determine the color based on the count
+    # 빨간 점 개수에 따라 색 결정
     color = (0, int(255 * (count / max_count)), int(255 * (count / max_count)))
 
-    # Draw a rectangle on the overlay image
+    # 이미지 위에 사각형 그리기
     cv2.rectangle(overlay, (region_x, region_y), (region_x + region_width, region_y + region_height),
                   color, -1)
 
-# Apply the overlay image onto the background image
+# 히트맵 이미지와 원본 이미지를 합성
 heatmap = cv2.addWeighted(overlay, 0.5, bg, 0.5, 0)
 
-# Save the resulting heatmap image
+# 히트맵 이미지 저장
 cv2.imwrite(output_filename, heatmap)
 
 cap.release()
