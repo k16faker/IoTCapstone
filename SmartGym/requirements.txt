@@ -1,0 +1,12 @@
+torch
+opencv-python
+firebase-admin
+datetime
+time
+pandas
+psutil
+torchvision
+pyyaml
+tqdm
+matplotlib
+seaborn
